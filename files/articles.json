@@ -1,0 +1,37 @@
+[
+  {
+    "article": "2101-2905440",
+    "name": "Наконечник рульової тяги зовнішній Lada Classic",
+    "current_price": 180.00,
+    "own_stock_level": 0.8,
+    "demand_velocity": 0.9
+  },
+  {
+    "article": "2101-3501070",
+    "name": "Барабан гальмівний задній Lada Classic",
+    "current_price": 320.00,
+    "own_stock_level": 0.6,
+    "demand_velocity": 0.7
+  },
+  {
+    "article": "21010-1003270",
+    "name": "Прокладка ГБЦ Lada 2101-2107",
+    "current_price": 145.00,
+    "own_stock_level": 0.9,
+    "demand_velocity": 0.6
+  },
+  {
+    "article": "2101-2304056",
+    "name": "Шарова опора нижня Lada Classic",
+    "current_price": 210.00,
+    "own_stock_level": 0.5,
+    "demand_velocity": 0.8
+  },
+  {
+    "article": "2108-2905444",
+    "name": "Наконечник рульової тяги зовнішній Lada 2108-2115",
+    "current_price": 195.00,
+    "own_stock_level": 0.7,
+    "demand_velocity": 0.85
+  }
+]
