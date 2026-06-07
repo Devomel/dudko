@@ -11,9 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from deps import startup, shutdown
 from routers import products, scraping, recommend, stats, analytics
 
-# Load .env from files/.env so env vars are available even if server wasn't
+# Load .env from engine/.env so env vars are available even if server wasn't
 # started via start.sh (e.g. during --reload restarts).
-_env_file = Path(__file__).parent.parent / "files" / ".env"
+_env_file = Path(__file__).parent.parent / "engine" / ".env"
 if _env_file.exists():
     for _line in _env_file.read_text().splitlines():
         _line = _line.strip()

@@ -17,10 +17,10 @@ LOG_API="$DATA_DIR/api.log"
 LOG_FRONT="$DATA_DIR/frontend.log"
 
 # ── .env ─────────────────────────────────────────────────────────────────────
-if [[ -f "$ROOT/files/.env" ]]; then
+if [[ -f "$ROOT/engine/.env" ]]; then
     set -a
     # shellcheck source=/dev/null
-    source "$ROOT/files/.env"
+    source "$ROOT/engine/.env"
     set +a
 fi
 
@@ -107,7 +107,7 @@ fi
 if ! "$VENV/bin/python" -c "import fastapi" 2>/dev/null; then
     info "Встановлення Python залежностей (може зайняти хвилину)..."
     "$VENV/bin/pip" install --quiet --upgrade pip
-    "$VENV/bin/pip" install --quiet -r "$ROOT/files/requirements.txt"
+    "$VENV/bin/pip" install --quiet -r "$ROOT/engine/requirements.txt"
     "$VENV/bin/pip" install --quiet -r "$ROOT/api/requirements.txt"
     ok "Залежності встановлено"
 else

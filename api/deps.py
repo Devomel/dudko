@@ -4,8 +4,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-# Allow importing modules from files/
-sys.path.insert(0, str(Path(__file__).parent.parent / "files"))
+# Allow importing modules from engine/
+sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from modules.db.connection import Database
 

@@ -1,6 +1,6 @@
 # Browser state and cache
-files/data/browser_state/
-files/data/
+engine/data/browser_state/
+engine/data/
 
 # Python
 __pycache__/
