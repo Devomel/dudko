@@ -51,6 +51,8 @@ function StepBar({ current }: { current: Step }) {
   );
 }
 
+const SESSION_KEY = "scraping_session";
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 function PriceCheckContent() {
   const [step, setStep] = useState<Step>("select");
@@ -70,6 +72,47 @@ function PriceCheckContent() {
     Record<string, { result?: RecommendResult; error?: string }>
   >({});
   const [recLoading, setRecLoading] = useState(false);
+
+  // Step 4: price editing per article
+  const [priceInputs, setPriceInputs] = useState<Record<string, string>>({});
+  const [priceSave, setPriceSave] = useState<Record<string, "idle" | "saving" | "saved" | "error">>({});
+
+  // Restore session from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      const { articles, task, sources } = JSON.parse(raw) as {
+        articles: string[];
+        task: BatchScrapingTask;
+        sources: Record<string, string[]>;
+      };
+      setSelectedArticles(new Set(articles));
+      setBatchTask(task);
+      const restored: Record<string, Set<string>> = {};
+      for (const [art, domains] of Object.entries(sources)) {
+        restored[art] = new Set(domains);
+      }
+      setSelectedSources(restored);
+      setStep("review");
+    } catch {}
+  }, []);
+
+  // Persist completed batch task to sessionStorage
+  useEffect(() => {
+    if (batchTask?.status !== "done") return;
+    try {
+      const sources: Record<string, string[]> = {};
+      for (const [art, set] of Object.entries(selectedSources)) {
+        sources[art] = Array.from(set);
+      }
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        articles: Array.from(selectedArticles),
+        task: batchTask,
+        sources,
+      }));
+    } catch {}
+  }, [batchTask, selectedArticles, selectedSources]);
 
   useEffect(() => {
     productsApi.list({ active_only: true, limit: 500 }).then(setProducts).catch(() => {});
@@ -163,6 +206,28 @@ function PriceCheckContent() {
 
     setRecommendations(out);
     setRecLoading(false);
+
+    // Pre-fill price inputs with recommended prices
+    const inputs: Record<string, string> = {};
+    for (const [art, rec] of Object.entries(out)) {
+      const price = rec.result?.recommendation.price;
+      if (price != null) inputs[art] = String(Math.round(price));
+    }
+    setPriceInputs(inputs);
+    setPriceSave({});
+  }
+
+  async function savePrice(art: string) {
+    const price = parseFloat(priceInputs[art] ?? "");
+    if (!price || price <= 0) return;
+    const product = products.find((p) => p.article === art);
+    setPriceSave((prev) => ({ ...prev, [art]: "saving" }));
+    try {
+      await productsApi.setStock(art, { price, quantity: product?.quantity ?? 0 });
+      setPriceSave((prev) => ({ ...prev, [art]: "saved" }));
+    } catch {
+      setPriceSave((prev) => ({ ...prev, [art]: "error" }));
+    }
   }
 
   function toggleSource(article: string, domain: string) {
@@ -190,10 +255,15 @@ function PriceCheckContent() {
   );
 
   function reset() {
+    sessionStorage.removeItem(SESSION_KEY);
     setStep("select");
     setBatchTask(null);
     setRecommendations({});
     setScrapingStatus("");
+    setSelectedArticles(new Set());
+    setSelectedSources({});
+    setPriceInputs({});
+    setPriceSave({});
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -730,6 +800,48 @@ function PriceCheckContent() {
                         {r.recommendation.reasoning}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Price update */}
+                  <div className="border-t border-slate-100 px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
+                    <span className="text-sm text-slate-600 font-medium whitespace-nowrap">Встановити ціну:</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={1}
+                        value={priceInputs[art] ?? ""}
+                        onChange={(e) => {
+                          setPriceInputs((prev) => ({ ...prev, [art]: e.target.value }));
+                          setPriceSave((prev) => ({ ...prev, [art]: "idle" }));
+                        }}
+                        className="w-28 px-2 py-1.5 border border-slate-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-green-400"
+                        placeholder="ціна"
+                      />
+                      <span className="text-slate-400 text-sm">₴</span>
+                    </div>
+                    {recPrice != null && priceInputs[art] !== String(Math.round(recPrice)) && (
+                      <button
+                        onClick={() => setPriceInputs((prev) => ({ ...prev, [art]: String(Math.round(recPrice)) }))}
+                        className="text-xs text-purple-600 hover:underline whitespace-nowrap"
+                      >
+                        ← рекомендована
+                      </button>
+                    )}
+                    <button
+                      onClick={() => savePrice(art)}
+                      disabled={priceSave[art] === "saving" || !priceInputs[art]}
+                      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
+                        priceSave[art] === "saved"
+                          ? "bg-green-100 text-green-700 border border-green-300"
+                          : "bg-green-600 text-white hover:bg-green-700"
+                      }`}
+                    >
+                      {priceSave[art] === "saving" ? "Збереження..." :
+                       priceSave[art] === "saved" ? "✓ Збережено" : "Зберегти ціну"}
+                    </button>
+                    {priceSave[art] === "error" && (
+                      <span className="text-xs text-red-500">Помилка збереження</span>
+                    )}
                   </div>
 
                   {/* Competitors mini-table */}

@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from decimal import Decimal
 
 from schema import ScrapingBundle
@@ -46,7 +47,7 @@ class ScrapingRepository:
                     RETURNING id
                     """,
                     bundle.article,
-                    bundle.scraped_at,
+                    _parse_dt(bundle.scraped_at),
                     summary["total_sources"],
                     len(bundle.errors),
                     _dec(summary["weighted_avg_price"]),
@@ -81,7 +82,7 @@ class ScrapingRepository:
                         Decimal(str(src.source_weight)),
                         Decimal(str(src.effective_weight)),
                         src.parser_source,
-                        src.scraped_at,
+                        _parse_dt(src.scraped_at),
                     )
 
                 # 3. Оновити лічильники для доменів з помилками
@@ -182,3 +183,11 @@ class ScrapingRepository:
 
 def _dec(value) -> Decimal | None:
     return Decimal(str(value)) if value is not None else None
+
+
+def _parse_dt(value) -> datetime | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value
+    return datetime.fromisoformat(str(value))

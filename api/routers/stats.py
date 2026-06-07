@@ -6,7 +6,7 @@ from deps import get_db
 
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "files"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "engine"))
 
 from modules.db.scraping import ScrapingRepository
 from modules.db.connection import Database

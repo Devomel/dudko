@@ -11,8 +11,7 @@ const navLinks = [
   { href: "/", label: "Дашборд" },
   { href: "/products", label: "Каталог" },
   { href: "/scraping", label: "Скрапінг" },
-  { href: "/recommendations", label: "Рекомендації" },
-  { href: "/analytics", label: "Аналітика" },
+{ href: "/analytics", label: "Аналітика" },
 ];
 
 export default function RootLayout({

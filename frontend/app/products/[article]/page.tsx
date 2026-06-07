@@ -188,7 +188,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ articl
             className="flex items-center gap-2 text-sm text-purple-600 hover:underline">
             <RefreshCw size={14} /> Скрапінг цього артикулу
           </Link>
-          <Link href={`/recommendations?article=${product.article}`}
+          <Link href={`/scraping?article=${product.article}`}
             className="flex items-center gap-2 text-sm text-green-600 hover:underline">
             <TrendingUp size={14} /> Рекомендація ціни
           </Link>

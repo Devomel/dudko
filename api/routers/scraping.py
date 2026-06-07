@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import uuid
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
@@ -9,10 +10,12 @@ from schemas import ScrapeRequest, BatchScrapeRequest
 import os
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "files"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "engine"))
 
 from modules.db.scraping import ScrapingRepository
 from modules.scraping import PriceScraper, SourceRegistry
+
+log = logging.getLogger("api.scraping")
 
 router = APIRouter(prefix="/scrape", tags=["scraping"])
 
@@ -22,6 +25,16 @@ _tasks: dict[str, dict] = {}
 
 def _scraping_repo(db=Depends(get_db)) -> ScrapingRepository:
     return ScrapingRepository(db)
+
+
+async def _persist_bundle(bundle) -> None:
+    """Save scraping bundle to DB; log but don't raise on failure."""
+    try:
+        db = await get_db()
+        repo = ScrapingRepository(db)
+        await repo.save_bundle(bundle)
+    except Exception as exc:
+        log.error(f"[DB] не вдалося зберегти сесію скрапінгу: {exc}")
 
 
 async def _run_scrape(task_id: str, article: str, req: ScrapeRequest) -> None:
@@ -36,6 +49,7 @@ async def _run_scrape(task_id: str, article: str, req: ScrapeRequest) -> None:
             openai_api_key=os.environ.get("OPENAI_API_KEY", ""),
         )
         bundle = await scraper.scrape_article(article)
+        await _persist_bundle(bundle)
         _tasks[task_id]["status"] = "done"
         _tasks[task_id]["result"] = bundle.to_dict()
     except Exception as exc:

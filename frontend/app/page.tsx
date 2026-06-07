@@ -141,7 +141,7 @@ export default function DashboardPage() {
           <Search size={20} className="text-purple-500 group-hover:text-purple-700" />
           <span className="font-medium text-slate-700">Запустити скрапінг</span>
         </Link>
-        <Link href="/recommendations" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-green-300 hover:shadow-md transition-all shadow-sm group">
+        <Link href="/scraping" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-green-300 hover:shadow-md transition-all shadow-sm group">
           <TrendingUp size={20} className="text-green-500 group-hover:text-green-700" />
           <span className="font-medium text-slate-700">Рекомендації цін</span>
         </Link>
