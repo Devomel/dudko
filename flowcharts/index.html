@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dudko Scrapper — Блок-схеми системи</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --accent: #6c72ff;
+      --accent2: #38bdf8;
+      --accent3: #34d399;
+      --accent4: #f59e0b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --danger: #f87171;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #16213e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 17, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    nav a:hover {
+      color: var(--accent2);
+      border-color: var(--accent2);
+      background: rgba(56,189,248,0.07);
+    }
+
+    main {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 1.4rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .section-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .diagram-wrap {
+      padding: 2rem;
+      overflow-x: auto;
+    }
+
+    .diagram-wrap .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* colour per section */
+    .s1 .section-num  { background: #312e81; color: var(--accent); }
+    .s1 .section-header h2 { color: var(--accent); }
+    .s2 .section-num  { background: #0c4a6e; color: var(--accent2); }
+    .s2 .section-header h2 { color: var(--accent2); }
+    .s3 .section-num  { background: #064e3b; color: var(--accent3); }
+    .s3 .section-header h2 { color: var(--accent3); }
+    .s4 .section-num  { background: #451a03; color: var(--accent4); }
+    .s4 .section-header h2 { color: var(--accent4); }
+    .s5 .section-num  { background: #4c0519; color: var(--danger); }
+    .s5 .section-header h2 { color: var(--danger); }
+    .s6 .section-num  { background: #312e81; color: #a78bfa; }
+    .s6 .section-header h2 { color: #a78bfa; }
+    .s7 .section-num  { background: #0c4a6e; color: #67e8f9; }
+    .s7 .section-header h2 { color: #67e8f9; }
+    .s8 .section-num  { background: #064e3b; color: #6ee7b7; }
+    .s8 .section-header h2 { color: #6ee7b7; }
+    .s9 .section-num  { background: #451a03; color: #fcd34d; }
+    .s9 .section-header h2 { color: #fcd34d; }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Dudko Scrapper — Блок-схеми ІС</h1>
+  <p>Інформаційна система моніторингу цін на автозапчастини: архітектура, алгоритми та потоки даних</p>
+</header>
+
+<nav>
+  <a href="#s1">Загальна архітектура</a>
+  <a href="#s2">Пайплайн скрапінгу</a>
+  <a href="#s3">Вилучення ціни</a>
+  <a href="#s4">Надійність джерел</a>
+  <a href="#s5">Нечітка логіка</a>
+  <a href="#s6">API-маршрути</a>
+  <a href="#s7">Майстер скрапінгу</a>
+  <a href="#s8">Схема БД</a>
+  <a href="#s9">Аналітика</a>
+</nav>
+
+<main>
+
+  <!-- 1. Загальна архітектура -->
+  <section class="section s1" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <h2>Загальна архітектура системи</h2>
+        <p>Три рівні: Frontend → Backend API → Engine (БД + Scraper + Fuzzy)</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+graph TB
+    subgraph FE["🖥️  Frontend  (Next.js 16 · TypeScript)"]
+        direction TB
+        P1["📊 Dashboard\n/"]
+        P2["📦 Каталог товарів\n/products"]
+        P3["🔍 Майстер скрапінгу\n/scraping"]
+        P4["💡 Рекомендації ціни\n/recommendations"]
+        P5["📈 Аналітика\n/analytics"]
+        APICL["lib/api.ts\nHTTP-клієнт"]
+    end
+
+    subgraph API["⚙️  Backend API  (FastAPI · Python · asyncpg)"]
+        direction TB
+        R1["POST /scrape/{article}\nGET  /scrape/tasks/{id}"]
+        R2["GET/POST/PUT/DELETE\n/products/*"]
+        R3["POST /recommend/{article}\nGET  /recommend/tasks/{id}"]
+        R4["GET /analytics/*"]
+        R5["GET /stats/*"]
+    end
+
+    subgraph ENG["🔧  Engine"]
+        direction TB
+        SC["PriceScraper\nscraping/scraper.py"]
+        PW["Playwright\n(Chromium + stealth)"]
+        PR["Price Parsers\n4-рівневий fallback"]
+        FZ["Fuzzy Engine\nMamdani FIS"]
+        REG["SourceRegistry\nBayesian weights"]
+    end
+
+    subgraph DB["🗄️  PostgreSQL 16"]
+        T1["products\nproduct_stock"]
+        T2["scraping_sessions\nscraping_observations"]
+        T3["competitor_sources"]
+        T4["sales_history"]
+    end
+
+    FE -- "REST/JSON\nlocalhost:8000" --> API
+    R1 --> SC
+    R3 --> SC & FZ
+    SC --> PW --> PR
+    SC --> REG
+    API <--> DB
+    FZ --> DB
+
+    style FE fill:#1e2235,stroke:#6c72ff,color:#e2e8f0
+    style API fill:#1a2636,stroke:#38bdf8,color:#e2e8f0
+    style ENG fill:#1a2a22,stroke:#34d399,color:#e2e8f0
+    style DB fill:#2a2218,stroke:#f59e0b,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Пайплайн скрапінгу -->
+  <section class="section s2" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <h2>Пайплайн скрапінгу цін</h2>
+        <p>Від артикулу товару до збереженого результату — повний ланцюжок обробки</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    A([🚀 Старт: артикул SKU]) --> B["🔎 Пошук URL магазинів\nDuckDuckGo / Bing / Google"]
+    B --> C["🏅 Ранжування доменів\nSourceRegistry — ваги довіри"]
+    C --> D{"Знайдено\nURLs?"}
+    D -- Ні --> Z1([⛔ Повернути: no_data])
+    D -- Так --> E["⚡ Паралельний скрапінг\n(concurrency = 6)"]
+
+    E --> F1["🌐 Сайт 1"]
+    E --> F2["🌐 Сайт 2"]
+    E --> F3["🌐 Сайт N"]
+
+    F1 & F2 & F3 --> G["🛡️ Антибот-обхід\nStealth JS · Cookies · UA rotation"]
+    G --> H["📄 Завантажити HTML\nplaywright.goto + чекати мережу"]
+    H --> I["💰 Вилучити ціну\n4-рівневий парсер"]
+    I --> J{"Ціна\nзнайдена?"}
+    J -- Ні --> K["🤖 AI Fallback\nOpenAI parser"]
+    J -- Так --> L["✅ SourceRecord\nprice · confidence · in_stock"]
+    K --> L2{"GPT дав\nрезультат?"}
+    L2 -- Так --> L
+    L2 -- Ні --> ERR["❌ errors[]"]
+
+    L --> M["📦 ScrapingBundle\nsources[] + errors[]"]
+    M --> N["⚖️ Зважена середня ціна\nΣ(price × eff_weight) / Σ(eff_weight)"]
+    N --> O["💾 Зберегти в БД\nscraping_sessions +\nscraping_observations"]
+    O --> P["🔄 Оновити ваги джерел\nSourceRegistry.record_result"]
+    P --> Q([✅ Повернути ScrapingBundle])
+
+    style A fill:#312e81,stroke:#6c72ff,color:#fff
+    style Q fill:#064e3b,stroke:#34d399,color:#fff
+    style Z1 fill:#4c0519,stroke:#f87171,color:#fff
+    style ERR fill:#4c0519,stroke:#f87171,color:#fff
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Вилучення ціни -->
+  <section class="section s3" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <h2>4-рівневий алгоритм вилучення ціни</h2>
+        <p>Cascading fallback: JSON-LD → Microdata → OpenGraph → CSS-селектори → AI</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    START(["📄 HTML сторінки магазину"]) --> L1
+
+    L1["🥇 Рівень 1: JSON-LD\n&lt;script type=application/ld+json&gt;\nSchema.org/Product"]
+    L1 --> C1{"Ціна\nзнайдена?"}
+    C1 -- Так --> R1["✅ Confidence = 0.95\n(найвища надійність)"]
+    C1 -- Ні --> L2
+
+    L2["🥈 Рівень 2: Microdata\nПошук [itemprop='price']\nHTML5 семантичні атрибути"]
+    L2 --> C2{"Ціна\nзнайдена?"}
+    C2 -- Так --> R2["✅ Confidence = 0.85"]
+    C2 -- Ні --> L3
+
+    L3["🥉 Рівень 3: OpenGraph\n&lt;meta property='product:price:amount'&gt;\nOG-метатеги"]
+    L3 --> C3{"Ціна\nзнайдена?"}
+    C3 -- Так --> R3["✅ Confidence = 0.75"]
+    C3 -- Ні --> L4
+
+    L4["4️⃣  Рівень 4: CSS-селектори\n.price · [data-price] · .product-price\nRegex на числа з валютою"]
+    L4 --> C4{"Ціна\nзнайдена?"}
+    C4 -- Так --> R4["✅ Confidence = 0.35–0.65\n(залежить від специфічності)"]
+    C4 -- Ні --> L5
+
+    L5["🤖 Рівень 5: AI Parser\nOpenAI GPT — передати фрагмент HTML,\nзапитати структуровану відповідь"]
+    L5 --> C5{"GPT повернув\nціну?"}
+    C5 -- Так --> R5["✅ Confidence = 0.82"]
+    C5 -- Ні --> FAIL["❌ Не вдалося вилучити\nдомен → errors[]"]
+
+    R1 & R2 & R3 & R4 & R5 --> NORM["🔢 Нормалізація\nВидалити пробіли/валюту/коми\nПеретворити в float (UAH)"]
+    NORM --> OUT(["📊 SourceRecord з ціною"])
+
+    style START fill:#0c4a6e,stroke:#38bdf8,color:#fff
+    style OUT fill:#064e3b,stroke:#34d399,color:#fff
+    style FAIL fill:#4c0519,stroke:#f87171,color:#fff
+    style L1 fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
+    style L2 fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
+    style L3 fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
+    style L4 fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
+    style L5 fill:#2a1f4f,stroke:#a78bfa,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Надійність джерел -->
+  <section class="section s4" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <h2>Байєсівська оцінка надійності джерел</h2>
+        <p>SourceRegistry: динамічне коригування ваг доменів після кожного скрапінгу</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    A(["🌐 Домен магазину"]) --> B{"Домен у\nреєстрі?"}
+    B -- Ні --> C["Ініціалізувати\nhits=0, appearances=0"]
+    B -- Так --> D["Завантажити поточні\nhits / appearances"]
+    C & D --> E["Спроба скрапінгу"]
+
+    E --> F{"Успіх?"}
+    F -- Так --> G["appearances += 1\nhits += 1"]
+    F -- Ні --> H["appearances += 1\n(hits без змін)"]
+
+    G & H --> I["🔢 Байєсівська формула\nweight = (hits + α) / (appearances + α + β)\nα = 0.1  β = 0.9"]
+
+    I --> J["💾 Зберегти в\nsource_registry.json"]
+
+    J --> EXAMPLES
+
+    subgraph EXAMPLES["Приклади ваг"]
+        direction LR
+        E1["Новий домен\n0/0 → weight ≈ 0.10"]
+        E2["Ненадійний\n3/20 → weight ≈ 0.18"]
+        E3["Середній\n15/25 → weight ≈ 0.60"]
+        E4["Надійний\n38/45 → weight ≈ 0.83"]
+        E5["Ідеальний\n10/10 → weight ≈ 0.92"]
+    end
+
+    I --> USE["⚖️ effective_weight\n= confidence × source_weight\n\nВикористовується для:\n• Ранжування результатів\n• Зваженої середньої ціни"]
+
+    style A fill:#451a03,stroke:#f59e0b,color:#fff
+    style EXAMPLES fill:#1c1a14,stroke:#f59e0b,color:#e2e8f0
+    style USE fill:#1c2a1a,stroke:#34d399,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Нечітка логіка -->
+  <section class="section s5" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <h2>Нечітка система Мамдані (2-блоковий FIS)</h2>
+        <p>Розрахунок рекомендованої ціни з урахуванням ринку та власного складу</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    SRC(["📊 Дані ScrapingBundle"]) --> PRE
+
+    subgraph PRE["Передобробка ринкових даних"]
+        direction LR
+        M1["min / median / max\nсередня зважена (WAP)"]
+        M2["in_stock_ratio\n= in_stock_count / total_sources"]
+        M3["market_spread\n= (max - min) / median"]
+    end
+
+    PRE --> B1
+
+    subgraph B1["🔷 Блок 1: Ринкові умови"]
+        direction TB
+        IN1["Вхід 1: stock_availability\n∈ [0, 1]\nscarce · normal · abundant"]
+        IN2["Вхід 2: market_spread\n∈ [0, ∞)\ntight · moderate · volatile"]
+        RULES1["9 правил IF–THEN\nнапр: abundant + tight → low_position\n       scarce + volatile → high_position"]
+        COG1["Дефазифікація CoG\n(Center of Gravity)\n200 кроків [0,1]"]
+        OUT1["market_position ∈ [0, 1]"]
+        IN1 & IN2 --> RULES1 --> COG1 --> OUT1
+    end
+
+    OUT1 --> B2
+
+    subgraph B2["🔶 Блок 2: Власні умови (опціональний)"]
+        direction TB
+        IN3["Вхід 3: own_stock_level\n∈ [0,1]\n0=надлишок, 1=高запас"]
+        IN4["Вхід 4: demand_velocity\n∈ [0,1]\n0=повільно, 1=швидко"]
+        RULES2["9 правил IF–THEN\nнапр: surplus + slow → -0.24\n       medium + high → +0.12"]
+        COG2["Дефазифікація CoG"]
+        OUT2["own_adjustment ∈ [-0.30, +0.30]"]
+        IN3 & IN4 --> RULES2 --> COG2 --> OUT2
+    end
+
+    OUT1 & OUT2 --> FINAL
+
+    subgraph FINAL["🎯 Фінальний розрахунок"]
+        direction TB
+        F1["final_pos = clamp(market_pos + own_adj, 0, 1)"]
+        F2["floor   = market_min × 1.03\nceiling = market_median × 1.20"]
+        F3["recommended_price\n= floor + final_pos × (ceiling − floor)"]
+        F1 --> F2 --> F3
+    end
+
+    FINAL --> OUT
+
+    subgraph OUT["📋 PriceRecommendation"]
+        direction LR
+        O1["recommended_price (UAH)"]
+        O2["strategy:\nundercut | competitive\nmoderate_premium | premium | no_data"]
+        O3["confidence [0,1]"]
+        O4["reasoning (пояснення)"]
+    end
+
+    style B1 fill:#1a1d3a,stroke:#6c72ff,color:#e2e8f0
+    style B2 fill:#2a1a1a,stroke:#f87171,color:#e2e8f0
+    style FINAL fill:#1a2a22,stroke:#34d399,color:#e2e8f0
+    style OUT fill:#1a2636,stroke:#38bdf8,color:#e2e8f0
+    style PRE fill:#1c1a14,stroke:#f59e0b,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. API-маршрути -->
+  <section class="section s6" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div>
+        <h2>REST API — маршрути та взаємодія</h2>
+        <p>FastAPI: 5 груп роутерів, фонові задачі, асинхронний polling</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant UI as 🖥️ Frontend
+    participant API as ⚙️ FastAPI
+    participant BG as 🔄 BackgroundTask
+    participant ENG as 🔧 Engine
+    participant DB as 🗄️ PostgreSQL
+
+    Note over UI,DB: Сценарій: Скрапінг + Рекомендація
+
+    UI->>API: POST /scrape/{article}\n{concurrency:6, search_limit:8}
+    API->>BG: Запустити фонову задачу
+    API-->>UI: {task_id:"abc123", status:"pending"}
+
+    loop Polling кожні 1–2 с
+        UI->>API: GET /scrape/tasks/abc123
+        API-->>UI: {status:"running", ...}
+    end
+
+    BG->>ENG: scraper.run(article)
+    ENG->>ENG: Пошук URLs (DuckDuckGo)
+    ENG->>ENG: Паралельний Playwright скрапінг
+    ENG->>DB: INSERT scraping_sessions +\nscraping_observations
+    BG-->>API: status = "completed", result = ScrapingBundle
+
+    UI->>API: GET /scrape/tasks/abc123
+    API-->>UI: {status:"completed", result:{sources:[...]}}
+
+    UI->>API: POST /recommend/{article}\n{own_stock_level:0.6}
+    API->>DB: SELECT sales_history (demand_velocity)
+    API->>ENG: fuzzy.recommend(sources, own_params)
+    ENG-->>API: PriceRecommendation
+    API->>DB: (логування, опц.)
+    API-->>UI: {recommended_price:1250, strategy:"competitive"}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Майстер скрапінгу (Frontend) -->
+  <section class="section s7" id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div>
+        <h2>UX-потік: Майстер скрапінгу</h2>
+        <p>4-крокова сторінка /scraping — від вибору товарів до рекомендацій</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph S1["Крок 1: Вибір товарів"]
+        A1["GET /products\nЗавантажити каталог"] --> A2["Список з checkbox\n(артикул, назва, ціна)"]
+        A2 --> A3["Вибрати один\nабо кілька артикулів"]
+    end
+
+    subgraph S2["Крок 2: Прогрес скрапінгу"]
+        B1["POST /scrape/batch\n{articles:[...]}"] --> B2["Polling task_ids\nкожні 1.5 с"]
+        B2 --> B3["Progress bar:\nN/total · поточний артикул"]
+        B3 --> B4{"Всі\nзавершені?"}
+        B4 -- Ні --> B2
+        B4 -- Так --> DONE2["✅ ScrapingBundles[]"]
+    end
+
+    subgraph S3["Крок 3: Перегляд джерел"]
+        C1["Таблиця конкурентів\nпо кожному артикулу"]
+        C2["Домен · Ціна · Склад\nConfidence · Weight"]
+        C3["Фільтр: тільки в наявності\nСортування за ціною"]
+        C1 --> C2 --> C3
+    end
+
+    subgraph S4["Крок 4: Рекомендації"]
+        D1["POST /recommend/from-sources\nПередати зібрані джерела"] --> D2["Fuzzy Engine"]
+        D2 --> D3["Картка рекомендації:\nЦіна · Стратегія · Впевненість"]
+        D3 --> D4["Кнопка: Оновити ціну\nPOST /products/{art}/stock"]
+    end
+
+    S1 --> S2 --> S3 --> S4
+
+    style S1 fill:#1e2235,stroke:#6c72ff,color:#e2e8f0
+    style S2 fill:#1a2636,stroke:#38bdf8,color:#e2e8f0
+    style S3 fill:#1a2a22,stroke:#34d399,color:#e2e8f0
+    style S4 fill:#2a1f10,stroke:#f59e0b,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Схема БД -->
+  <section class="section s8" id="s8">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <div>
+        <h2>Схема бази даних</h2>
+        <p>PostgreSQL 16: таблиці, зв'язки, ключові представлення та функції</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+erDiagram
+    categories {
+        int id PK
+        varchar name
+    }
+    brands {
+        int id PK
+        varchar name
+    }
+    car_models {
+        int id PK
+        varchar name
+        varchar make
+    }
+    products {
+        varchar article PK
+        varchar name
+        int category_id FK
+        int brand_id FK
+        boolean is_active
+        timestamp created_at
+    }
+    product_stock {
+        varchar article PK
+        numeric price
+        int quantity
+        timestamp updated_at
+    }
+    product_stock_history {
+        bigint id PK
+        varchar article FK
+        numeric price
+        int quantity
+        timestamp changed_at
+    }
+    scraping_sessions {
+        bigint id PK
+        varchar article FK
+        int source_count
+        numeric min_price
+        numeric max_price
+        numeric median_price
+        numeric weighted_avg
+        timestamp scraped_at
+    }
+    scraping_observations {
+        bigint id PK
+        bigint session_id FK
+        varchar domain
+        varchar url
+        numeric price
+        float confidence
+        float source_weight
+        boolean in_stock
+        varchar parser_source
+    }
+    competitor_sources {
+        int id PK
+        varchar domain UK
+        int appearances
+        int hits
+        float weight
+        timestamp updated_at
+    }
+    sales_history {
+        bigint id PK
+        varchar article FK
+        int quantity_sold
+        numeric price_at_sale
+        date sale_date
+    }
+
+    categories ||--o{ products : "category_id"
+    brands ||--o{ products : "brand_id"
+    products ||--o| product_stock : "article"
+    products ||--o{ product_stock_history : "article"
+    products ||--o{ scraping_sessions : "article"
+    scraping_sessions ||--o{ scraping_observations : "session_id"
+    products ||--o{ sales_history : "article"
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Аналітика -->
+  <section class="section s9" id="s9">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <div>
+        <h2>Потік аналітичних розрахунків</h2>
+        <p>Від сирих даних продажів до дашборду та прогнозу запасів</p>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    DB[(🗄️ PostgreSQL\nДані продажів\n& запасів)] --> AGG
+
+    subgraph AGG["Агрегування даних (SQL)"]
+        direction TB
+        A1["Місячні продажі\nGROUP BY month\n→ units, revenue, product_count"]
+        A2["Топ-продавці\nGROUP BY article\nORDER BY quantity_sold DESC"]
+        A3["Сезонність\nGROUP BY category × month\n→ теплова карта попиту"]
+        A4["Стан запасів\nJOIN product_stock\n→ quantity · місяці запасу"]
+    end
+
+    AGG --> API_LAYER
+
+    subgraph API_LAYER["⚙️ /analytics/*  endpoints"]
+        direction LR
+        EP1["GET /analytics/sales/monthly\n?months=12"]
+        EP2["GET /analytics/sales/top\n?limit=20"]
+        EP3["GET /analytics/sales/seasonality"]
+        EP4["GET /analytics/stock"]
+    end
+
+    API_LAYER --> FE_LAYER
+
+    subgraph FE_LAYER["🖥️ Frontend /analytics (Recharts)"]
+        direction TB
+        CH1["📊 Графік продажів\nLineChart (revenue + units)"]
+        CH2["🏆 Топ-товари\nBarChart (units vs revenue)"]
+        CH3["🌡️ Теплова карта\nCategoryGrid (12 місяців × N категорій)"]
+        CH4["📦 Таблиця запасів\nколонки: qty · months_of_supply\nпозначки: LOW / OK / EXCESS"]
+    end
+
+    CALC["🔢 demand_velocity\n= avg_monthly_sales / max_possible\nДля нечіткого блоку 2"] --> DB
+
+    DB --> CALC
+    A4 --> CALC
+
+    style DB fill:#451a03,stroke:#f59e0b,color:#fff
+    style AGG fill:#1c1a14,stroke:#f59e0b,color:#e2e8f0
+    style API_LAYER fill:#1a2636,stroke:#38bdf8,color:#e2e8f0
+    style FE_LAYER fill:#1e2235,stroke:#6c72ff,color:#e2e8f0
+    style CALC fill:#1a2a22,stroke:#34d399,color:#e2e8f0
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Dudko Scrapper — Інформаційна система моніторингу цін автомагазину &nbsp;·&nbsp; FastAPI + Next.js 16 + PostgreSQL 16
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e2235',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#6c72ff',
+      lineColor: '#94a3b8',
+      secondaryColor: '#1a2636',
+      tertiaryColor: '#1a2a22',
+      background: '#0f1117',
+      mainBkg: '#1a1d27',
+      nodeBorder: '#6c72ff',
+      clusterBkg: '#22263a',
+      titleColor: '#e2e8f0',
+      edgeLabelBackground: '#1a1d27',
+      fontFamily: 'Segoe UI, system-ui, sans-serif',
+    },
+    flowchart: { curve: 'basis', useMaxWidth: true },
+    sequence: { useMaxWidth: true, showSequenceNumbers: false },
+    er: { useMaxWidth: true },
+  });
+</script>
+</body>
+</html>
